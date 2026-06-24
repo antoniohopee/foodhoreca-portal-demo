@@ -28,6 +28,16 @@ Stack: **Python 3.12 · FastAPI · MySQL 8 · SQL scritto a mano · Docker**.
 
 Prerequisito: **Docker Desktop**.
 
+Modo più semplice (avvia Docker se serve, attende l'app e apre il browser):
+
+```bash
+./start.sh        # avvia tutto e apre http://localhost:8000
+./stop.sh         # ferma (i dati restano)
+./stop.sh --reset # ferma e azzera il DB (riparte dai seed)
+```
+
+Oppure con i comandi Docker espliciti:
+
 ```bash
 cp .env.example .env
 docker compose up --build
