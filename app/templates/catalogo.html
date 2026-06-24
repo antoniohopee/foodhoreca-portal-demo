@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Catalogo - FoodHoreca{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Catalogo</h1>
+
+<form method="get" action="/catalogo" class="row g-2 mb-4">
+    <div class="col-md-5">
+        <label class="form-label small text-muted">Cliente</label>
+        <select name="cliente" class="form-select" onchange="this.form.submit()">
+            {% for c in clienti %}
+            <option value="{{ c.codice }}" {% if c.codice == cliente_sel %}selected{% endif %}>
+                {{ c.ragione_sociale }} ({{ c.citta }}) - listino {{ c.listino_codice }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-5">
+        <label class="form-label small text-muted">Cerca articolo</label>
+        <input type="text" name="q" value="{{ cerca }}" class="form-control" placeholder="nome o codice...">
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-success w-100"><i class="bi bi-search"></i> Cerca</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+<table class="table align-middle bg-white shadow-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Codice</th><th>Articolo</th><th>Categoria</th>
+            <th class="text-end">Prezzo</th><th class="text-center">Mult.</th>
+            <th class="text-center">Disp.</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for a in articoli %}
+        <tr>
+            <td class="text-muted small">{{ a.codice }}</td>
+            <td>{{ a.nome }}</td>
+            <td><span class="badge bg-secondary-subtle text-secondary-emphasis">{{ a.categoria }}</span></td>
+            <td class="text-end">
+                {{ a.prezzo_finale | eur }}<small class="text-muted">/{{ a.unita_misura }}</small>
+                {% if a.origine_prezzo != 'listino' %}
+                <br><span class="badge bg-success-subtle text-success-emphasis" title="Prezzo dedicato al cliente">
+                    {{ a.origine_prezzo }}</span>
+                {% endif %}
+            </td>
+            <td class="text-center">x{{ a.qta_multiplo }}</td>
+            <td class="text-center">{{ a.disponibilita }}</td>
+            <td class="text-end">
+                <form method="post" action="/carrello/add">
+                    <input type="hidden" name="codice" value="{{ a.codice }}">
+                    <input type="hidden" name="cliente" value="{{ cliente_sel }}">
+                    <input type="hidden" name="step" value="{{ a.qta_multiplo }}">
+                    <button class="btn btn-sm btn-outline-success" title="Aggiungi {{ a.qta_multiplo }} pz">
+                        <i class="bi bi-cart-plus"></i> +{{ a.qta_multiplo }}
+                    </button>
+                </form>
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">Nessun articolo</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

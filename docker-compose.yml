@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: foodhoreca_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpw}
+      MYSQL_DATABASE: ${DB_NAME:-foodhoreca}
+      MYSQL_USER: ${DB_USER:-app}
+      MYSQL_PASSWORD: ${DB_PASS:-apppw}
+    ports:
+      - "3307:3306"
+    # Gli script in db/ vengono eseguiti in ordine alfabetico al primo avvio:
+    # 01_schema.sql -> 02_views.sql -> 03_seed.sql
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d:ro
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_ROOT_PASSWORD:-rootpw}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  web:
+    build: .
+    container_name: foodhoreca_web
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:-foodhoreca}
+      DB_USER: ${DB_USER:-app}
+      DB_PASS: ${DB_PASS:-apppw}
+      SECRET_KEY: ${SECRET_KEY:-demo-secret-change-me}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  dbdata:

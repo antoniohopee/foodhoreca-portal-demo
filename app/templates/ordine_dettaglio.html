@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Ordine #{{ ordine.id }} - FoodHoreca{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Ordine #{{ ordine.id }}</h1>
+    <div class="d-flex gap-2">
+        <a href="/ordini/{{ ordine.id }}/export.txt" class="btn btn-outline-success">
+            <i class="bi bi-file-earmark-arrow-down"></i> Export TXT
+        </a>
+        {% if ordine.stato != 'annullato' %}
+        <form method="post" action="/ordini/{{ ordine.id }}/annulla"
+              onsubmit="return confirm('Annullare l ordine?')">
+            <button class="btn btn-outline-danger"><i class="bi bi-x-circle"></i> Annulla</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="text-muted small text-uppercase">Cliente</div>
+                <div class="fw-semibold">{{ ordine.ragione_sociale }}</div>
+                <div class="text-muted">{{ ordine.citta }} &middot; cod. {{ ordine.cliente_codice }}</div>
+            </div>
+            {% if ordine.indirizzo_id %}
+            <div class="col-md-6">
+                <div class="text-muted small text-uppercase">Destinazione (510)</div>
+                <div class="fw-semibold">{{ ordine.dest_descrizione }}</div>
+                <div class="text-muted">{{ ordine.dest_citta }} &middot; cod. {{ ordine.codice_indirizzo }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+<table class="table align-middle bg-white shadow-sm">
+    <thead class="table-light">
+        <tr><th>Codice</th><th>Articolo</th><th class="text-center">Qta</th>
+            <th class="text-end">Prezzo</th><th class="text-end">Totale</th></tr>
+    </thead>
+    <tbody>
+    {% for r in righe %}
+        <tr>
+            <td class="text-muted small">{{ r.articolo_codice }}</td>
+            <td>{{ r.descrizione }}</td>
+            <td class="text-center">{{ r.qta }}</td>
+            <td class="text-end">{{ r.prezzo | eur }}</td>
+            <td class="text-end fw-semibold">{{ r.totale_riga | eur }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr class="table-light">
+            <td colspan="4" class="text-end fw-bold">Totale</td>
+            <td class="text-end fw-bold fs-5 text-success">{{ totale | eur }}</td>
+        </tr>
+    </tfoot>
+</table>
+</div>
+{% endblock %}

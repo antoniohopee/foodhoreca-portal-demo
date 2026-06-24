@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - FoodHoreca{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Dashboard agente</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Totale ordinato</div>
+                <div class="display-6 fw-bold text-success">{{ (kpi.totale_ordinato if kpi else 0) | eur }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Ordini</div>
+                <div class="display-6 fw-bold">{{ kpi.n_ordini if kpi else 0 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase">Clienti attivi</div>
+                <div class="display-6 fw-bold">{{ kpi.n_clienti if kpi else 0 }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white fw-semibold">Top clienti per ordinato</div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Cliente</th><th class="text-end">N. ordini</th><th class="text-end">Totale</th></tr>
+            </thead>
+            <tbody>
+            {% for c in top_clienti %}
+                <tr>
+                    <td>{{ c.ragione_sociale }}</td>
+                    <td class="text-end">{{ c.n_ordini }}</td>
+                    <td class="text-end">{{ c.totale_ordinato | eur }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="3" class="text-center text-muted py-3">Nessun ordine ancora</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

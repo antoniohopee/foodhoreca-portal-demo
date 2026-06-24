@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Ordini - FoodHoreca{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Ordini</h1>
+<div class="table-responsive">
+<table class="table align-middle bg-white shadow-sm">
+    <thead class="table-light">
+        <tr><th>#</th><th>Data</th><th>Cliente</th><th class="text-center">Righe</th>
+            <th class="text-end">Totale</th><th class="text-center">Stato</th><th></th></tr>
+    </thead>
+    <tbody>
+    {% for o in ordini %}
+        <tr>
+            <td class="text-muted">{{ o.id }}</td>
+            <td>{{ o.created_at.strftime('%d/%m/%Y %H:%M') if o.created_at else '' }}</td>
+            <td>{{ o.ragione_sociale }}</td>
+            <td class="text-center">{{ o.n_righe }}</td>
+            <td class="text-end fw-semibold">{{ o.totale | eur }}</td>
+            <td class="text-center">
+                {% set color = {'bozza':'secondary','in_coda':'primary','inviato':'success','annullato':'danger'} %}
+                <span class="badge bg-{{ color.get(o.stato,'secondary') }}">{{ o.stato }}</span>
+            </td>
+            <td class="text-end"><a href="/ordini/{{ o.id }}" class="btn btn-sm btn-outline-success">Apri</a></td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">Nessun ordine</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
